@@ -21,7 +21,7 @@ class ContactCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
@@ -33,13 +33,21 @@ class ContactCrudController extends CrudController
 
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
     {
-        CRUD::setFromDb(); // set columns from db columns.
+        CRUD::column('name')->label('Name');
+        CRUD::column('email')->label('Email');
+        CRUD::column('image')
+            ->type('image')
+            ->label('Photo')
+            ->prefix('storage/')
+            ->height('80px')
+            ->width('80px');
+
 
         /**
          * Columns can be defined using the fluent syntax:
@@ -49,14 +57,39 @@ class ContactCrudController extends CrudController
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
     protected function setupCreateOperation()
     {
         CRUD::setValidation(ContactRequest::class);
-        CRUD::setFromDb(); // set fields from db columns.
+        CRUD::addField([
+            'name' => 'name',
+            'type' => 'text',
+            'label' => 'Name',
+        ]);
+
+        CRUD::addField([
+            'name' => 'email',
+            'type' => 'email',
+            'label' => 'Email',
+        ]);
+
+        CRUD::addField([
+            'name' => 'image',
+            'label' => 'Photo',
+            'type' => 'upload',
+            'upload' => true,
+            'disk' => 'public',
+        ]);
+
+        CRUD::field('image')
+            ->type('upload')
+            ->withFiles([
+                'disk' => 'public',
+                'path' => 'uploads',
+            ]);
 
         /**
          * Fields can be defined using the fluent syntax:
@@ -66,7 +99,7 @@ class ContactCrudController extends CrudController
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
